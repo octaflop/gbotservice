@@ -49,17 +49,23 @@ async def pull_request_reopened_event(event, gh, *args, **kwargs):
 async def pull_request_closed_event(event, gh, *args, **kwargs):
     """ Whenever a pull_request is opened, greet the author."""
     url = event.data["pull_request"]["comments_url"]
-    # reaction_url = f"{url}/reactions"
+    pr_url = event.data["pull_request"]["url"]
+    last_comment = gh.getiter(pr_url)[0]
+    print(last_comment)
+    comment_url = last_comment.data['url']
+    reaction_url = f"{comment_url}/reactions"
     author = event.data["pull_request"]["user"]["login"]
     merged = event.data["pull_request"]["merged"]
     if not merged:
         message = (f"🤖 Thanks for the pull_request @{author}! "
                    "I don't think we're accepting this PR at this time")
-        # reaction = "-1"
+        reaction = "-1"
     elif merged:
         message = (f"🤖 Thanks for the pull_request @{author}! "
                    "Your contribution has been merged successfully!!!")
-        # reaction = "hooray"
+        reaction = "hooray"
+    await gh.post(reaction_url, data={"content": reaction},
+                  accept='application/vnd.github.squirrel-girl-preview+json')
     await gh.post(url, data={"body": message})
 
 
