@@ -50,7 +50,11 @@ async def pull_request_closed_event(event, gh, *args, **kwargs):
     """ Whenever a pull_request is opened, greet the author."""
     url = event.data["pull_request"]["comments_url"]
     pr_url = event.data["pull_request"]["url"]
-    last_comment = gh.getiter(pr_url)[0]
+    comments = gh.getiter(pr_url)
+    # last_comment = [i async for i in comments][0]
+    async for i in comments:
+        last_comment = i
+        break
     print(last_comment)
     comment_url = last_comment.data['url']
     reaction_url = f"{comment_url}/reactions"
