@@ -51,7 +51,7 @@ async def pull_request_closed_event(event, gh, *args, **kwargs):
     url = event.data["pull_request"]["comments_url"]
     # reaction_url = f"{url}/reactions"
     author = event.data["pull_request"]["user"]["login"]
-    merged = event.data["pull_request"]["head"]["merged"]
+    merged = event.data["pull_request"]["merged"]
     if not merged:
         message = (f"🤖 Thanks for the pull_request @{author}! "
                    "I don't think we're accepting this PR at this time")
