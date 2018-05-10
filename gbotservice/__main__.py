@@ -51,7 +51,7 @@ async def pull_request_closed_event(event, gh, *args, **kwargs):
     url = event.data["pull_request"]["comments_url"]
     pr_url = event.data["pull_request"]["url"]
     comments = gh.getiter(pr_url)
-    print([i for i in comments])
+    print([i async for i in comments])
     # last_comment = [i async for i in comments][0]
     async for i in comments:
         last_comment = i
