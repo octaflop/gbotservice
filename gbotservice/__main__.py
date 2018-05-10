@@ -22,6 +22,48 @@ async def issue_opened_event(event, gh, *args, **kwargs):
     await gh.post(url, data={"body": message})
 
 
+@router.register("pull_request", action="opened")
+async def pull_request_opened_event(event, gh, *args, **kwargs):
+    """ Whenever a pull_request is opened, greet the author."""
+    url = event.data["pull_request"]["comments_url"]
+    # reaction_url = f"{url}/reactions"
+    author = event.data["pull_request"]["user"]["login"]
+    message = (f"🤖 Thanks for the pull_request @{author}! "
+               "I will look into it ASAP! (I'm a bot, BTW 🤖).")
+    await gh.post(url, data={"body": message})
+
+
+@router.register("pull_request", action="reopened")
+async def pull_request_reopened_event(event, gh, *args, **kwargs):
+    """ Whenever a pull_request is opened, greet the author."""
+    url = event.data["pull_request"]["comments_url"]
+    # reaction_url = f"{url}/reactions"
+    author = event.data["pull_request"]["user"]["login"]
+    message = ("Way to keep going! "
+               f"🤖 Thanks for the pull_request @{author}! "
+               "I will look into it ASAP! (I'm a bot, BTW 🤖).")
+    await gh.post(url, data={"body": message})
+
+
+@router.register("pull_request", action="closed")
+async def pull_request_closed_event(event, gh, *args, **kwargs):
+    """ Whenever a pull_request is opened, greet the author."""
+    url = event.data["pull_request"]["comments_url"]
+    # reaction_url = f"{url}/reactions"
+    author = event.data["pull_request"]["user"]["login"]
+    action = event.data["pull_request"]["action"]
+    merged = event.data["head"]["merged"]
+    if action == "closed" and not merged:
+        message = (f"🤖 Thanks for the pull_request @{author}! "
+                   "I don't think we're accepting this PR at this time")
+        # reaction = "-1"
+    if action == "closed" and merged:
+        message = (f"🤖 Thanks for the pull_request @{author}! "
+                   "Your contribution has been merged successfully!!!")
+        # reaction = "hooray"
+    await gh.post(url, data={"body": message})
+
+
 async def main(request):
         # read the GitHub webhook payload
     body = await request.read()
